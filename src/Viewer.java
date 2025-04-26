@@ -64,5 +64,12 @@ public class Viewer extends JFrame {
         int textY = boxY + (boxHeight + textHeight) / 2 - 5; // -5 fine-tunes vertical centering
 
         g.drawString(cookieText, textX, textY);
+
+        // Draw small cookies
+        game.getSmallCookies().draw(g);
+    }
+
+    public Game getGame() {
+        return game;
     }
 }
