@@ -57,11 +57,11 @@ public class Viewer extends JFrame {
         FontMetrics metrics = g.getFontMetrics(); // Gets the size info of the current font
 
         int textWidth = metrics.stringWidth(cookieText);
-        int textHeight = metrics.getAscent(); // Used to align text vertically
+        int textHeight = metrics.getAscent(); // Aligns text vertically
 
         // Calculate centered position
         int textX = boxX + (boxWidth - textWidth) / 2;
-        int textY = boxY + (boxHeight + textHeight) / 2 - 5; // -5 fine-tunes vertical centering
+        int textY = boxY + (boxHeight + textHeight) / 2 - 5;
 
         g.drawString(cookieText, textX, textY);
 
