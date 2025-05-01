@@ -6,7 +6,6 @@ import java.util.TimerTask;
 public class Game implements MouseListener, MouseMotionListener{
     private final Viewer window;
     private long cookies;
-    private int clickVal;
     private int upgradeMultiplier;
     private ArrayList<cookieUpgrades> upgrades;
     private cookieUpgrades smallCookies;
@@ -14,11 +13,17 @@ public class Game implements MouseListener, MouseMotionListener{
     public Game()
     {
         this.window = new Viewer(this);
+        startGame();
+        window.addMouseListener(this);
+
+    }
+
+    private void startGame()
+    {
         upgrades = new ArrayList<cookieUpgrades>();
         smallCookies = new cookieUpgrades(window);
 
         cookies = 0;
-        clickVal = 1;
         upgradeMultiplier = 1;
 
         // Spawns small cookies every 3 seconds
@@ -29,11 +34,7 @@ public class Game implements MouseListener, MouseMotionListener{
                 window.repaint();
             }
         }, 0, 3000);
-
-        window.addMouseListener(this);
     }
-
-
 
     public long getCookies() {
         return cookies;
@@ -47,10 +48,9 @@ public class Game implements MouseListener, MouseMotionListener{
         this.upgradeMultiplier = upgradeMultiplier;
     }
 
-
     public void incrementCookies()
     {
-        cookies += (long) clickVal * upgradeMultiplier;
+        cookies += upgradeMultiplier;
     }
 
 
