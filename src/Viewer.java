@@ -7,8 +7,8 @@ public class Viewer extends JFrame {
     private Game game;
     private Image backgroundImage;
     private Image cookieImage;
-    private Image goldenCookieImage;
-    private MouseListener listener;
+    private final int WINDOW_WIDTH = 1200;
+    private final int WINDOW_HEIGHT = 800;
 
 
     public Viewer(Game game)
@@ -16,11 +16,10 @@ public class Viewer extends JFrame {
         this.game = game;
         backgroundImage = new ImageIcon("Resources/backgroundImage.jpeg").getImage();
         cookieImage = new ImageIcon("Resources/PerfectCookie.png").getImage();
-        goldenCookieImage = new ImageIcon("Resources/goldenCookie.png").getImage();
 
         this.setTitle("Cookie Clicker");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(1200, 800);
+        this.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         this.setVisible(true);
 
     }
@@ -32,15 +31,26 @@ public class Viewer extends JFrame {
 
     public void paint(Graphics g)
     {
-        g.drawImage(backgroundImage, 0, 0, 1200, 800, this);
+        g.drawImage(backgroundImage, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, this);
 
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
 
         g.drawImage(cookieImage, centerX - 150, centerY - 120, 300, 300, null);
-        // g.setColor(Color.RED);
-        // g.drawRect(centerX - 150,centerY - 150, 300, 300);
 
+        paintCookieCount(g);
+        // Draw upgrade buttons
+        for (UpgradeButton button : game.getUpgradeButtons()) {
+            button.draw(g);
+        }
+
+        // Draw small cookies
+        game.getSmallCookies().draw(g);
+    }
+
+    public void paintCookieCount(Graphics g)
+    {
+        // Draw cookie count box
         int boxX = 450;
         int boxY = 60;
         int boxWidth = 300;
@@ -65,8 +75,30 @@ public class Viewer extends JFrame {
 
         g.drawString(cookieText, textX, textY);
 
-        // Draw small cookies
-        game.getSmallCookies().draw(g);
+        // Draw idle production rate (without box)
+        int cpsY = boxY + boxHeight + 20; // Position it below the cookie count box
+
+        // Calculate total cookies per second
+        double totalCPS = 0;
+        for (UpgradeButton button : game.getUpgradeButtons())
+        {
+            totalCPS += button.getCookiesPerSecond();
+        }
+
+        // Format the CPS to 2 decimal places
+        String cpsText = String.format("%.2f cookies per second", totalCPS);
+        g.setFont(new Font("TimesRoman", Font.PLAIN, 17));
+        metrics = g.getFontMetrics();
+        textWidth = metrics.stringWidth(cpsText);
+        textX = boxX + (boxWidth - textWidth) / 2;
+        textY = cpsY + 15; // Adjust vertical position
+
+        g.drawString(cpsText, textX, textY);
+
+        String clickText = game.getUpgradeMultiplier() + " cookies per click";
+
+        g.drawString(clickText, textX, textY + 20);
+
     }
 
     public Game getGame() {

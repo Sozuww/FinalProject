@@ -7,25 +7,41 @@ public class Game implements MouseListener, MouseMotionListener{
     private final Viewer window;
     private long cookies;
     private int upgradeMultiplier;
-    private ArrayList<cookieUpgrades> upgrades;
     private cookieUpgrades smallCookies;
+    private ArrayList<UpgradeButton> upgradeButtons;
+    private Timer idleTimer;
 
     public Game()
     {
         this.window = new Viewer(this);
         startGame();
         window.addMouseListener(this);
-
     }
 
     private void startGame()
     {
-        upgrades = new ArrayList<cookieUpgrades>();
         smallCookies = new cookieUpgrades(window);
+        upgradeButtons = new ArrayList<>();
 
         cookies = 0;
         upgradeMultiplier = 1;
 
+        // Initialize upgrade buttons
+        upgradeButtons.add(new UpgradeButton(20, 100, "Cursor", 15, 0.1));
+        upgradeButtons.add(new UpgradeButton(20, 170, "Grandma", 100, 1));
+        upgradeButtons.add(new UpgradeButton(20, 240, "Farm", 1100, 8));
+        upgradeButtons.add(new UpgradeButton(20, 310, "Mine", 12000, 47));
+        upgradeButtons.add(new UpgradeButton(20, 380, "Factory", 130000, 260));
+        upgradeButtons.add(new UpgradeButton(20, 450, "Bank", 1400000, 1400));
+        upgradeButtons.add(new UpgradeButton(20, 520, "Temple", 20000000, 7800));
+        upgradeButtons.add(new UpgradeButton(20, 450, "Wizard Tower", 330000000, 44000));
+        upgradeButtons.add(new UpgradeButton(20, 520, "Shipment", 5100000000L, 260000));
+
+        startTimers();
+    }
+
+    public void startTimers()
+    {
         // Spawns small cookies every 3 seconds
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -33,12 +49,27 @@ public class Game implements MouseListener, MouseMotionListener{
                 smallCookies.spawnCookie();
                 window.repaint();
             }
-        }, 0, 3000);
+        }, 0, 7000);
+
+        // Idle cookie production timer
+        idleTimer = new Timer();
+        idleTimer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                double totalCPS = 0;
+                for (UpgradeButton button : upgradeButtons) {
+                    double cps = button.getCookiesPerSecond();
+                    totalCPS += cps;
+                    button.addCookiesGenerated(cps);
+                }
+                cookies += totalCPS;
+                window.repaint();
+            }
+        }, 0, 500); // Update every second
     }
 
     public long getCookies() {
         return cookies;
-    }
+    } 
 
     public int getUpgradeMultiplier() {
         return upgradeMultiplier;
@@ -59,13 +90,25 @@ public class Game implements MouseListener, MouseMotionListener{
     }
 
     public void mouseClicked(MouseEvent e) {
-        // Check for small cookie clicks first
+        // Check for upgrade button clicks
+        for (UpgradeButton button : upgradeButtons) {
+            if (button.isClicked(e.getX(), e.getY())) {
+                if (cookies >= button.getCost()) {
+                    cookies -= button.getCost();
+                    button.purchase();
+                    window.repaint();
+                }
+                return;
+            }
+        }
+
+        // Check for small cookie clicks
         if (smallCookies.checkClick(e.getX(), e.getY())) {
             window.repaint();
             return;
         }
 
-        // Only check for main cookie click if no small cookie was clicked
+        // Check for main cookie click
         int centerX = window.getWidth() / 2;
         int centerY = window.getHeight() / 2;
         int mid = 150;
@@ -74,7 +117,6 @@ public class Game implements MouseListener, MouseMotionListener{
                 e.getY() > centerY - mid && e.getY() < centerY + mid) {
             incrementCookies();
             window.repaint();
-            System.out.println("cookies: " + getCookies());
         }
     }
 
@@ -112,5 +154,9 @@ public class Game implements MouseListener, MouseMotionListener{
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    public ArrayList<UpgradeButton> getUpgradeButtons() {
+        return upgradeButtons;
     }
 }

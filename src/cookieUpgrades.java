@@ -22,6 +22,11 @@ public class cookieUpgrades
     {
         int x = random.nextInt(game.getWidth() - 50);
         int y = random.nextInt(game.getHeight() - 50);
+
+        while (x < 200)
+        {
+            x = random.nextInt(game.getWidth() - 50);
+        }
         smallCookies.add(new SmallCookie(x, y));
     }
 
