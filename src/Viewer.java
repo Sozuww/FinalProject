@@ -4,9 +4,9 @@ import java.awt.event.MouseListener;
 
 
 public class Viewer extends JFrame {
-    private Game game;
-    private Image backgroundImage;
-    private Image cookieImage;
+    private final Game game;
+    private final Image backgroundImage;
+    private final Image cookieImage;
     private final int WINDOW_WIDTH = 1200;
     private final int WINDOW_HEIGHT = 800;
 
@@ -14,9 +14,12 @@ public class Viewer extends JFrame {
     public Viewer(Game game)
     {
         this.game = game;
+
+        // Initializes images
         backgroundImage = new ImageIcon("Resources/backgroundImage.jpeg").getImage();
         cookieImage = new ImageIcon("Resources/PerfectCookie.png").getImage();
 
+        // Creates window and sets title
         this.setTitle("Cookie Clicker");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -31,14 +34,17 @@ public class Viewer extends JFrame {
 
     public void paint(Graphics g)
     {
+        // Draws background image
         g.drawImage(backgroundImage, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, this);
 
+        // Draws a centered cookie image
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
-
         g.drawImage(cookieImage, centerX - 150, centerY - 120, 300, 300, null);
 
+        // Draws the cookie count visuals
         paintCookieCount(g);
+
         // Draw upgrade buttons
         for (UpgradeButton button : game.getUpgradeButtons()) {
             button.draw(g);
@@ -63,9 +69,9 @@ public class Viewer extends JFrame {
         g.setFont(new Font("TimesRoman", Font.PLAIN, 35));
         g.setColor(Color.WHITE);
 
-        String cookieText = Long.toString(game.getCookies()) + " cookies";
+        String cookieText = game.getCookies() + " cookies";
         FontMetrics metrics = g.getFontMetrics(); // Gets the size info of the current font
-
+        
         int textWidth = metrics.stringWidth(cookieText);
         int textHeight = metrics.getAscent(); // Aligns text vertically
 

@@ -1,3 +1,13 @@
+/**
+ * Cookie Clicker
+ *
+ * Built by K. Mawakana on May 9, 2025 for CS2 @ Menlo School
+ * with inspiration from Julien "Orteil" Thiennot "Cookie Clicker" (2013)
+ *
+ * Cookie Clicker is an idle game where you bake cookies
+ * and upgrade to bake even more and as much as possible.
+ */
+
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -9,10 +19,10 @@ public class Game implements MouseListener, MouseMotionListener{
     private int upgradeMultiplier;
     private cookieUpgrades smallCookies;
     private ArrayList<UpgradeButton> upgradeButtons;
-    private Timer idleTimer;
 
     public Game()
     {
+        // Creates new viewer class
         this.window = new Viewer(this);
         startGame();
         window.addMouseListener(this);
@@ -20,6 +30,7 @@ public class Game implements MouseListener, MouseMotionListener{
 
     private void startGame()
     {
+        // Initialize variables
         smallCookies = new cookieUpgrades(window);
         upgradeButtons = new ArrayList<>();
 
@@ -34,25 +45,26 @@ public class Game implements MouseListener, MouseMotionListener{
         upgradeButtons.add(new UpgradeButton(20, 380, "Factory", 130000, 260));
         upgradeButtons.add(new UpgradeButton(20, 450, "Bank", 1400000, 1400));
         upgradeButtons.add(new UpgradeButton(20, 520, "Temple", 20000000, 7800));
-        upgradeButtons.add(new UpgradeButton(20, 450, "Wizard Tower", 330000000, 44000));
-        upgradeButtons.add(new UpgradeButton(20, 520, "Shipment", 5100000000L, 260000));
+        upgradeButtons.add(new UpgradeButton(20, 590, "Wizard Tower", 330000000, 44000));
+        upgradeButtons.add(new UpgradeButton(20, 660, "Shipment", 5100000000L, 260000));
 
+        // Starts 2 timers for essential game functions
         startTimers();
     }
 
     public void startTimers()
     {
-        // Spawns small cookies every 3 seconds
+        // Spawns small cookies every 12 seconds
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 smallCookies.spawnCookie();
                 window.repaint();
             }
-        }, 0, 7000);
+        }, 0, 12000);
 
         // Idle cookie production timer
-        idleTimer = new Timer();
+        Timer idleTimer = new Timer();
         idleTimer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 double totalCPS = 0;
@@ -61,10 +73,10 @@ public class Game implements MouseListener, MouseMotionListener{
                     totalCPS += cps;
                     button.addCookiesGenerated(cps);
                 }
-                cookies += totalCPS;
+                cookies += (long) totalCPS;
                 window.repaint();
             }
-        }, 0, 500); // Update every second
+        }, 0, 500); // Updates every half-second
     }
 
     public long getCookies() {
@@ -84,11 +96,11 @@ public class Game implements MouseListener, MouseMotionListener{
         cookies += upgradeMultiplier;
     }
 
-
     public cookieUpgrades getSmallCookies() {
         return smallCookies;
     }
 
+    // Checks for  a mouse click is detected: main cookie, golden cookie, and upgrade button
     public void mouseClicked(MouseEvent e) {
         // Check for upgrade button clicks
         for (UpgradeButton button : upgradeButtons) {
